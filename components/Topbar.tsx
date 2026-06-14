@@ -2,14 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Phone, LayoutDashboard, PhoneIncoming, Plus, LogOut, Upload } from 'lucide-react';
+import { Phone, LayoutDashboard, PhoneIncoming, Plus, LogOut } from 'lucide-react';
 import { useLeads } from '@/hooks/useLeads';
 import { logout } from '@/app/data/auth';
 
 const nav = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/leads/generate', label: 'Nový', icon: Plus },
-  { href: '/import', label: 'Import', icon: Upload },
 ];
 
 export default function Topbar() {

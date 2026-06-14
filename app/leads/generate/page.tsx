@@ -8,7 +8,6 @@ import {
   AlertCircle,
   UserPlus,
   Upload,
-  ArrowRight,
   FileText,
   Briefcase,
   MapPin,
@@ -233,22 +232,7 @@ export default function GenerateLeadsPage() {
         </div>
       </div>
 
-      {/* Quick links */}
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={() => router.push('/')}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-slate-700 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-slate-600 active:scale-[0.97]"
-        >
-          <ArrowRight className="h-4 w-4" />
-          Přejít na Dashboard
-        </button>
-        <button
-          onClick={() => router.push('/')}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-600/20 transition-all duration-200 hover:from-indigo-500 hover:to-purple-500 active:scale-[0.97]"
-        >
-          Call Mode
-        </button>
-      </div>
+
     </div>
   );
 }
