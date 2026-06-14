@@ -22,25 +22,25 @@ export default function LeadTable({
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-800/60 bg-slate-950/30">
-              <th className="px-6 py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px]">
+              <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px]">
                 Firma
               </th>
-              <th className="px-6 py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px]">
+              <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px]">
                 Telefon
               </th>
-              <th className="hidden px-6 py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px] md:table-cell">
+              <th className="hidden px-3 sm:px-6 py-3 sm:py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px] md:table-cell">
                 Obor
               </th>
-              <th className="hidden px-6 py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px] md:table-cell">
+              <th className="hidden px-3 sm:px-6 py-3 sm:py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px] md:table-cell">
                 Město
               </th>
-              <th className="px-6 py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px]">
+              <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px]">
                 Status
               </th>
-              <th className="hidden px-6 py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px] lg:table-cell">
+              <th className="hidden px-3 sm:px-6 py-3 sm:py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px] lg:table-cell">
                 Poslední kontakt
               </th>
-              <th className="px-6 py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px]">
+              <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold tracking-wide text-slate-500 uppercase text-[11px]">
                 Akce
               </th>
             </tr>
@@ -58,15 +58,15 @@ export default function LeadTable({
                   key={lead.id}
                   className="group transition-all duration-200 hover:bg-slate-800/40"
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <button
                       onClick={() => onSelect(lead)}
-                      className="font-medium text-white transition-colors hover:text-indigo-400 text-left"
+                      className="font-medium text-white transition-colors hover:text-indigo-400 text-left text-sm leading-snug"
                     >
                       {lead.companyName}
                     </button>
                   </td>
-                  <td className="px-6 py-4 font-mono text-sm text-slate-400">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono text-xs sm:text-sm text-slate-400">
                     <a
                       href={`tel:${lead.phone}`}
                       className="transition-colors hover:text-indigo-400"
@@ -74,13 +74,13 @@ export default function LeadTable({
                       {lead.phone}
                     </a>
                   </td>
-                  <td className="hidden px-6 py-4 text-slate-400 md:table-cell">{lead.industry}</td>
-                  <td className="hidden px-6 py-4 text-slate-400 md:table-cell">{lead.city}</td>
-                  <td className="px-6 py-4">
+                  <td className="hidden px-3 sm:px-6 py-3 sm:py-4 text-slate-400 md:table-cell">{lead.industry}</td>
+                  <td className="hidden px-3 sm:px-6 py-3 sm:py-4 text-slate-400 md:table-cell">{lead.city}</td>
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <StatusBadge status={lead.status} />
                   </td>
-                  <td className="hidden px-6 py-4 text-slate-500 lg:table-cell">{lead.lastContact}</td>
-                  <td className="px-6 py-4">
+                  <td className="hidden px-3 sm:px-6 py-3 sm:py-4 text-slate-500 lg:table-cell">{lead.lastContact}</td>
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => router.push(`/leads/${lead.id}`)}
@@ -92,7 +92,7 @@ export default function LeadTable({
                       </button>
                       <button
                         onClick={() => onDelete(lead.id)}
-                        className="inline-flex items-center justify-center rounded-lg p-1.5 text-slate-600 opacity-0 transition-all duration-200 hover:bg-red-500/10 hover:text-red-400 group-hover:opacity-100"
+                        className="inline-flex items-center justify-center rounded-lg p-1.5 text-slate-500 sm:text-slate-600 sm:opacity-0 transition-all duration-200 hover:bg-red-500/10 hover:text-red-400 sm:group-hover:opacity-100"
                         title="Smazat lead"
                       >
                         <Trash2 className="h-4 w-4" />

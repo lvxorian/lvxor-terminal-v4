@@ -28,7 +28,7 @@ export default function FilterBar({
   onFilterChange: (filter: LeadStatus | 'ALL') => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-nowrap sm:flex-wrap gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none pb-1">
       {filters.map(({ value, label }) => {
         const active = activeFilter === value;
         return (

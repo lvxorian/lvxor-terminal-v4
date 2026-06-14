@@ -4,7 +4,7 @@ import { useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
-import { getLeadById, getNextLeadId, getPrevLeadId, getLeadPosition } from '@/app/data/leads';
+import { useLeads } from '@/hooks/useLeads';
 import CallActions from '@/components/CallActions';
 import ScriptPanel from '@/components/ScriptPanel';
 
@@ -12,6 +12,7 @@ export default function CallPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
+  const { getLeadById, getNextLeadId, getPrevLeadId, getLeadPosition } = useLeads();
   const lead = getLeadById(id);
   const nextId = getNextLeadId(id);
   const prevId = getPrevLeadId(id);
@@ -50,8 +51,8 @@ export default function CallPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col gap-6 lg:flex-row">
-      <div className="flex-1 overflow-y-auto rounded-2xl border border-slate-800/60 bg-slate-900/60 p-6 backdrop-blur-sm">
+    <div className="flex h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-4rem)] flex-col gap-4 lg:flex-row min-h-0">
+      <div className="flex-1 overflow-y-auto rounded-2xl border border-slate-800/60 bg-slate-900/60 p-4 sm:p-6 backdrop-blur-sm min-h-0">
         <CallActions
           key={lead.id}
           lead={lead}
@@ -62,7 +63,7 @@ export default function CallPage() {
           position={position}
         />
       </div>
-      <div className="w-full overflow-y-auto lg:w-[420px]">
+      <div className="w-full shrink-0 overflow-y-auto lg:w-[420px] min-h-0">
         <ScriptPanel />
       </div>
     </div>

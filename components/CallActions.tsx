@@ -17,7 +17,7 @@ import {
   ArrowLeftFromLine,
 } from 'lucide-react';
 import { Lead, LeadStatus } from '@/app/types';
-import { updateLeadStatus, getNextLeadId, updateLeadNotes } from '@/app/data/leads';
+import { useLeads } from '@/hooks/useLeads';
 
 const statusButtons = [
   {
@@ -68,12 +68,13 @@ export default function CallActions({
   position: { index: number; total: number } | null;
 }) {
   const router = useRouter();
+  const { updateStatus, updateNotes, getNextLeadId } = useLeads();
   const [notes, setNotes] = useState(lead.notes);
   const [saved, setSaved] = useState(false);
 
   function handleStatusChange(newStatus: LeadStatus) {
-    updateLeadNotes(lead.id, notes);
-    updateLeadStatus(lead.id, newStatus);
+    updateNotes(lead.id, notes);
+    updateStatus(lead.id, newStatus);
 
     if (newStatus === LeadStatus.NEW) {
       router.push('/');
@@ -89,7 +90,7 @@ export default function CallActions({
   }
 
   function handleSaveNotes() {
-    updateLeadNotes(lead.id, notes);
+    updateNotes(lead.id, notes);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }

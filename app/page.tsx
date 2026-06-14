@@ -2,20 +2,42 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Phone, Users, TrendingUp } from 'lucide-react';
+import { Plus, Phone, Users, TrendingUp, Download } from 'lucide-react';
 import { Lead, LeadStatus } from '@/app/types';
-import { getLeads, deleteLead } from '@/app/data/leads';
+import { useLeads } from '@/hooks/useLeads';
 import FilterBar from '@/components/FilterBar';
 import LeadTable from '@/components/LeadTable';
 import LeadDetailModal from '@/components/LeadDetailModal';
 
+function exportCSV(leads: Lead[]) {
+  const header = 'companyName,phone,industry,city,status,lastContact,notes';
+  const rows = leads.map((l) =>
+    [
+      `"${l.companyName}"`,
+      l.phone,
+      `"${l.industry}"`,
+      l.city,
+      l.status,
+      l.lastContact,
+      `"${l.notes.replace(/"/g, '""')}"`,
+    ].join(','),
+  );
+  const csv = [header, ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `lvxor-leady-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function Dashboard() {
   const router = useRouter();
+  const { leads, deleteLead } = useLeads();
   const [filter, setFilter] = useState<LeadStatus | 'ALL'>('ALL');
-  const [refresh, setRefresh] = useState(0);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
-  const leads = getLeads();
   const filteredLeads =
     filter === 'ALL' ? leads : leads.filter((l) => l.status === filter);
 
@@ -23,7 +45,6 @@ export default function Dashboard() {
     if (window.confirm('Opravdu chcete smazat tento lead?')) {
       deleteLead(id);
       setSelectedLead((prev) => (prev?.id === id ? null : prev));
-      setRefresh((r) => r + 1);
     }
   }
 
@@ -40,23 +61,33 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="space-y-8" key={refresh}>
-      <div className="flex items-end justify-between">
+    <div className="space-y-8">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-3xl font-bold text-transparent">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
             Dashboard
           </h1>
-          <p className="mt-1.5 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500">
             Přehled a správa leadů pro cold calling.
           </p>
         </div>
-        <button
-          onClick={() => router.push('/leads/generate')}
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all duration-200 hover:from-indigo-500 hover:to-purple-500 hover:shadow-indigo-500/30 active:scale-[0.97]"
-        >
-          <Plus className="h-4 w-4" />
-          Nový lead
-        </button>
+        <div className="flex gap-2 sm:gap-3">
+          <button
+            onClick={() => exportCSV(leads)}
+            className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl border border-slate-700/50 bg-slate-800/50 px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-slate-700/50 active:scale-[0.97]"
+            title="Exportovat vše do CSV"
+          >
+            <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
+          <button
+            onClick={() => router.push('/leads/generate')}
+            className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all duration-200 hover:from-indigo-500 hover:to-purple-500 hover:shadow-indigo-500/30 active:scale-[0.97]"
+          >
+            <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Nový lead</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

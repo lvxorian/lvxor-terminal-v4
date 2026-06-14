@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
 import AuthGate from '@/components/AuthGate';
+import { LeadsProvider } from '@/hooks/useLeads';
 
 const outfit = Outfit({ subsets: ['latin'] });
 
@@ -21,7 +22,9 @@ export default function RootLayout({
   return (
     <html lang="cs" className="dark">
       <body className={`${outfit.className} min-h-screen antialiased`}>
-        <AuthGate>{children}</AuthGate>
+        <LeadsProvider>
+          <AuthGate>{children}</AuthGate>
+        </LeadsProvider>
       </body>
     </html>
   );

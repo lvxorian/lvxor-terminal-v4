@@ -17,7 +17,7 @@ import {
   Save,
 } from 'lucide-react';
 import { Lead, LeadStatus } from '@/app/types';
-import { updateLeadStatus, updateLeadNotes } from '@/app/data/leads';
+import { useLeads } from '@/hooks/useLeads';
 import StatusBadge from './StatusBadge';
 
 const miniStatusButtons = [
@@ -61,6 +61,7 @@ export default function LeadDetailModal({
   onClose: () => void;
 }) {
   const router = useRouter();
+  const { updateStatus, updateNotes } = useLeads();
   const [notes, setNotes] = useState(lead.notes);
 
   useEffect(() => {
@@ -72,13 +73,13 @@ export default function LeadDetailModal({
   }, [onClose]);
 
   function handleStatusChange(newStatus: LeadStatus) {
-    updateLeadNotes(lead.id, notes);
-    updateLeadStatus(lead.id, newStatus);
+    updateNotes(lead.id, notes);
+    updateStatus(lead.id, newStatus);
     onClose();
   }
 
   function handleSaveNotes() {
-    updateLeadNotes(lead.id, notes);
+    updateNotes(lead.id, notes);
   }
 
   return (
@@ -86,7 +87,7 @@ export default function LeadDetailModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-700/60 bg-slate-900 p-6 shadow-2xl shadow-black/40">
+      <div className="relative w-full max-w-lg max-h-[85dvh] overflow-y-auto rounded-2xl border border-slate-700/60 bg-slate-900 p-4 sm:p-6 shadow-2xl shadow-black/40">
         {/* Close */}
         <button
           onClick={onClose}
