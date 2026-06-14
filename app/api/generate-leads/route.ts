@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const GOOGLE_PLACES_API = 'https://maps.googleapis.com/maps/api/place';
+const PLACES_NEW = 'https://places.googleapis.com/v1/places:searchText';
 
 function formatType(type: string): string {
   return type
@@ -31,30 +31,49 @@ export async function POST(request: Request) {
     if (city) parts.push(city);
     if (region) parts.push(region);
     const searchQuery = parts.join(', ');
-    const searchUrl = `${GOOGLE_PLACES_API}/textsearch/json?query=${encodeURIComponent(searchQuery)}&language=cs&key=${apiKey}`;
 
-    const searchRes = await fetch(searchUrl);
-    const searchData = await searchRes.json();
+    const body = {
+      textQuery: searchQuery,
+      languageCode: 'cs',
+      pageSize: 10,
+    };
 
-    if (searchData.status !== 'OK') {
-      if (searchData.status === 'ZERO_RESULTS') {
-        return NextResponse.json({ leads: [] });
-      }
+    const fieldMask = [
+      'places.id',
+      'places.displayName',
+      'places.formattedAddress',
+      'places.nationalPhoneNumber',
+      'places.internationalPhoneNumber',
+      'places.websiteUri',
+      'places.types',
+      'places.addressComponents',
+    ].join(',');
+
+    const res = await fetch(PLACES_NEW, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': fieldMask,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      const msg = errBody?.error?.message || `HTTP ${res.status}`;
       return NextResponse.json(
-        { error: `Google API error: ${searchData.status} — ${searchData.error_message || ''}` },
+        { error: `Chyba Google API: ${msg}` },
         { status: 502 },
       );
     }
 
-    const places = (searchData.results || []).slice(0, 10);
+    const data = await res.json();
+    const places: any[] = data.places || [];
 
-    const detailResponses = await Promise.allSettled(
-      places.map((place: any) =>
-        fetch(
-          `${GOOGLE_PLACES_API}/details/json?place_id=${place.place_id}&language=cs&key=${apiKey}`,
-        ).then((r) => r.json()),
-      ),
-    );
+    if (places.length === 0) {
+      return NextResponse.json({ leads: [] });
+    }
 
     const leads: Array<{
       companyName: string;
@@ -63,25 +82,25 @@ export async function POST(request: Request) {
       city: string;
     }> = [];
 
-    for (const result of detailResponses) {
-      if (result.status !== 'fulfilled') continue;
-
-      const detail = result.value;
-      if (detail.status !== 'OK') continue;
-
-      const companyName = detail.result.name;
+    for (const place of places) {
+      const companyName = place.displayName?.text || '';
       const phone =
-        detail.result.international_phone_number ||
-        detail.result.formatted_phone_number ||
+        place.internationalPhoneNumber ||
+        place.nationalPhoneNumber ||
         '';
-      const website = detail.result.website;
+      const website = place.websiteUri;
 
-      if (!phone || website) continue;
+      if (!companyName || !phone || website) continue;
 
-      const comps: Array<{ long_name: string; short_name: string; types: string[] }> =
-        detail.result.address_components || [];
+      const comps: Array<{
+        longText: string;
+        shortText: string;
+        types: string[];
+      }> = place.addressComponents || [];
 
-      const cityComponent = comps.find((c) => c.types.includes('locality'));
+      const cityComponent = comps.find((c) =>
+        c.types.includes('locality'),
+      );
       const regionComponent = comps.find((c) =>
         c.types.includes('administrative_area_level_1'),
       );
@@ -89,17 +108,19 @@ export async function POST(request: Request) {
       if (
         region &&
         regionComponent &&
-        !regionComponent.long_name
+        !regionComponent.longText
           .toLowerCase()
           .includes(region.toLowerCase()) &&
-        !region.toLowerCase().includes(regionComponent.long_name.toLowerCase())
+        !region
+          .toLowerCase()
+          .includes(regionComponent.longText.toLowerCase())
       ) {
         continue;
       }
 
-      const cityName = cityComponent?.long_name || city;
+      const cityName = cityComponent?.longText || city;
 
-      const type = detail.result.types?.[0] || query;
+      const type = place.types?.[0] || query;
       const industry = formatType(type);
 
       leads.push({ companyName, phone, industry, city: cityName });
