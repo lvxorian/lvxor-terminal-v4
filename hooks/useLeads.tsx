@@ -40,6 +40,14 @@ interface AddResult {
   skipped: number;
 }
 
+const PRIORITY: Record<LeadStatus, number> = {
+  [LeadStatus.NEW]: 0,
+  [LeadStatus.CALLBACK]: 1,
+  [LeadStatus.NO_ANSWER]: 2,
+  [LeadStatus.MEETING]: 3,
+  [LeadStatus.REJECTED]: 4,
+};
+
 interface LeadsContextValue {
   leads: Lead[];
   addLeads: (items: { companyName: string; phone: string; industry: string; city: string }[]) => AddResult;
@@ -51,6 +59,7 @@ interface LeadsContextValue {
   getPrevLeadId: (id: string) => string | null;
   getLeadPosition: (id: string) => { index: number; total: number } | null;
   getFirstLeadId: () => string | null;
+  getCallQueue: () => Lead[];
 }
 
 const LeadsContext = createContext<LeadsContextValue | null>(null);
@@ -144,6 +153,15 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
 
   const getFirstLeadId = useCallback(() => leads.length > 0 ? leads[0].id : null, [leads]);
 
+  const getCallQueue = useCallback(() => {
+    return [...leads].sort((a, b) => {
+      const pa = PRIORITY[a.status];
+      const pb = PRIORITY[b.status];
+      if (pa !== pb) return pa - pb;
+      return new Date(a.lastContact).getTime() - new Date(b.lastContact).getTime();
+    });
+  }, [leads]);
+
   if (!ready) return null;
 
   return (
@@ -159,6 +177,7 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
         getPrevLeadId,
         getLeadPosition,
         getFirstLeadId,
+        getCallQueue,
       }}
     >
       {children}

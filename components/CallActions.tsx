@@ -1,13 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Phone,
   MapPin,
   Building2,
   Save,
-  ArrowLeft,
+  SkipForward,
   PhoneOff,
   Clock,
   CalendarCheck,
@@ -15,9 +14,12 @@ import {
   ChevronRight,
   ChevronLeft,
   ArrowLeftFromLine,
+  ChevronsRight,
 } from 'lucide-react';
 import { Lead, LeadStatus } from '@/app/types';
+import { useRouter } from 'next/navigation';
 import { useLeads } from '@/hooks/useLeads';
+import StatusBadge from './StatusBadge';
 
 const statusButtons = [
   {
@@ -44,61 +46,61 @@ const statusButtons = [
     icon: XCircle,
     classes: 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white shadow-lg shadow-red-600/20',
   },
-  {
-    status: LeadStatus.NEW,
-    label: 'Zpět na seznam',
-    icon: ArrowLeft,
-    classes: 'bg-slate-600/90 hover:bg-slate-500 text-white shadow-lg shadow-slate-600/20',
-  },
 ];
+
+const PHASE_LABELS: Record<string, string> = {
+  'new': 'Nové leady',
+  'follow-up': 'Follow-up',
+};
 
 export default function CallActions({
   lead,
+  phase,
+  queueIndex,
+  queueLength,
   onPrev,
   onNext,
   hasPrev,
   hasNext,
-  position,
+  onStatusChange,
 }: {
   lead: Lead;
+  phase: 'new' | 'follow-up';
+  queueIndex: number;
+  queueLength: number;
   onPrev: () => void;
   onNext: () => void;
   hasPrev: boolean;
   hasNext: boolean;
-  position: { index: number; total: number } | null;
+  onStatusChange: (status: LeadStatus) => void;
 }) {
   const router = useRouter();
-  const { updateStatus, updateNotes, getNextLeadId } = useLeads();
+  const { updateNotes } = useLeads();
   const [notes, setNotes] = useState(lead.notes);
   const [saved, setSaved] = useState(false);
-
-  function handleStatusChange(newStatus: LeadStatus) {
-    updateNotes(lead.id, notes);
-    updateStatus(lead.id, newStatus);
-
-    if (newStatus === LeadStatus.NEW) {
-      router.push('/');
-      return;
-    }
-
-    const nextId = getNextLeadId(lead.id);
-    if (nextId) {
-      router.push(`/leads/${nextId}`);
-    } else {
-      router.push('/');
-    }
-  }
-
   function handleSaveNotes() {
     updateNotes(lead.id, notes);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
 
+  const remaining = queueLength - queueIndex - 1;
+
   return (
-    <div className="flex h-full flex-col gap-1.5">
+    <div className="flex h-full flex-col gap-2">
+      {/* Phase indicator */}
+      <div className="flex items-center gap-2 shrink-0">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-400 uppercase tracking-wider">
+          <ChevronsRight className="h-3 w-3" />
+          {PHASE_LABELS[phase]}
+        </span>
+        <span className="text-[10px] font-medium text-slate-500">
+          {remaining > 0 ? `${remaining} zbývá` : 'poslední'}
+        </span>
+      </div>
+
       {/* Navigation */}
-      <div className="flex items-center justify-between shrink-0">
+      <div className="flex items-center justify-between shrink-0 -mt-0.5">
         <button
           onClick={() => router.push('/')}
           className="flex items-center gap-1 text-xs text-slate-500 transition-colors hover:text-slate-300"
@@ -116,11 +118,9 @@ export default function CallActions({
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
 
-          {position && (
-            <span className="min-w-[2.5rem] text-center text-[10px] font-medium text-slate-500 tabular-nums">
-              {position.index}/{position.total}
-            </span>
-          )}
+          <span className="min-w-[2.5rem] text-center text-[10px] font-medium text-slate-500 tabular-nums">
+            {queueIndex + 1}/{queueLength}
+          </span>
 
           <button
             onClick={onNext}
@@ -134,54 +134,65 @@ export default function CallActions({
 
       {/* Lead detail */}
       <div className="shrink-0">
-        <h1 className="text-xl font-bold text-white truncate">{lead.companyName}</h1>
-        <div className="mt-1.5 space-y-1">
-          <a
-            href={`tel:${lead.phone}`}
-            className="group flex items-center gap-2 text-sm"
-          >
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 transition-colors group-hover:bg-emerald-500/20">
-              <Phone className="h-3.5 w-3.5" />
-            </span>
-            <span className="phone-number font-mono tracking-tight">{lead.phone}</span>
-          </a>
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-800">
-              <Building2 className="h-3 w-3" />
-            </span>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="text-xl font-bold text-white truncate leading-tight">{lead.companyName}</h1>
+          <StatusBadge status={lead.status} />
+        </div>
+        <a
+          href={`tel:${lead.phone}`}
+          className="group mt-1.5 block"
+        >
+          <span className="phone-number text-3xl sm:text-4xl font-bold tracking-tight leading-none block">
+            {lead.phone}
+          </span>
+        </a>
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs sm:text-sm text-slate-400">
+          <span className="flex items-center gap-1.5">
+            <Building2 className="h-3.5 w-3.5 text-slate-500" />
             {lead.industry}
-          </div>
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-800">
-              <MapPin className="h-3 w-3" />
-            </span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <MapPin className="h-3.5 w-3.5 text-slate-500" />
             {lead.city}
-          </div>
+          </span>
         </div>
       </div>
+
+      {/* Skip */}
+      {hasNext && (
+        <button
+          onClick={onNext}
+          className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-slate-700/50 px-3 py-1.5 text-[11px] font-medium text-slate-500 transition-all duration-200 hover:border-slate-600/50 hover:text-slate-300 active:scale-[0.97]"
+        >
+          <SkipForward className="h-3 w-3" />
+          Přeskočit na další
+        </button>
+      )}
 
       {/* Notes */}
       <div className="shrink-0">
         <label htmlFor="notes" className="mb-0.5 block text-[11px] font-medium text-slate-400">
           Poznámky
         </label>
-        <textarea
-          id="notes"
-          value={notes}
-          onChange={(e) => {
-            setNotes(e.target.value);
-            setSaved(false);
-          }}
-          placeholder="Průběžné poznámky z hovoru..."
-          className="h-14 w-full resize-none rounded-xl border border-slate-700/50 bg-slate-800/50 p-2 text-xs text-white placeholder-slate-500 transition-all duration-200 focus:border-indigo-500/50 focus:bg-slate-800/80 focus:outline-none focus:ring-2 focus:ring-indigo-500/10"
-        />
-        <button
-          onClick={handleSaveNotes}
-          className="mt-1 inline-flex items-center gap-1 rounded-lg bg-slate-700 px-2.5 py-1 text-[11px] font-medium text-slate-300 transition-all duration-200 hover:bg-slate-600 active:scale-[0.97]"
-        >
-          <Save className="h-3 w-3" />
-          {saved ? 'Uloženo' : 'Uložit'}
-        </button>
+        <div className="flex gap-2">
+          <textarea
+            id="notes"
+            value={notes}
+            onChange={(e) => {
+              setNotes(e.target.value);
+              setSaved(false);
+            }}
+            placeholder="Průběžné poznámky z hovoru..."
+            className="h-14 w-full resize-none rounded-xl border border-slate-700/50 bg-slate-800/50 p-2 text-xs text-white placeholder-slate-500 transition-all duration-200 focus:border-indigo-500/50 focus:bg-slate-800/80 focus:outline-none focus:ring-2 focus:ring-indigo-500/10"
+          />
+          <button
+            onClick={handleSaveNotes}
+            className="self-start inline-flex items-center gap-1 rounded-lg bg-slate-700 px-2.5 py-2 text-[11px] font-medium text-slate-300 transition-all duration-200 hover:bg-slate-600 active:scale-[0.97] shrink-0"
+          >
+            <Save className="h-3 w-3" />
+            {saved ? 'Uloženo' : 'Uložit'}
+          </button>
+        </div>
       </div>
 
       {/* Status buttons */}
@@ -193,14 +204,14 @@ export default function CallActions({
           {statusButtons.map(({ status, label, icon: Icon, classes }) => (
             <button
               key={status}
-              onClick={() => handleStatusChange(status)}
-              className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200 active:scale-[0.97] ${classes}`}
+              onClick={() => onStatusChange(status)}
+              className={`flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-[0.97] ${classes}`}
             >
-              <span className="flex items-center gap-2">
-                <Icon className="h-3.5 w-3.5" />
+              <span className="flex items-center gap-2.5">
+                <Icon className="h-4 w-4" />
                 {label}
               </span>
-              <ChevronRight className="h-3.5 w-3.5 opacity-70" />
+              <ChevronRight className="h-4 w-4 opacity-70" />
             </button>
           ))}
         </div>
