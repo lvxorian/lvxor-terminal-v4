@@ -51,8 +51,8 @@ export default function CallPage() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-4rem)] flex-col gap-4 lg:flex-row min-h-0">
-      <div className="flex-1 overflow-y-auto rounded-2xl border border-slate-800/60 bg-slate-900/60 p-4 sm:p-6 backdrop-blur-sm min-h-0">
+    <div className="flex h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-4rem)] flex-col gap-2 lg:flex-row min-h-0">
+      <div className="flex-1 rounded-2xl border border-slate-800/60 bg-slate-900/60 p-3 sm:p-4 backdrop-blur-sm min-h-0">
         <CallActions
           key={lead.id}
           lead={lead}
@@ -63,7 +63,7 @@ export default function CallPage() {
           position={position}
         />
       </div>
-      <div className="w-full shrink-0 overflow-y-auto lg:w-[420px] min-h-0">
+      <div className="w-full shrink-0 lg:w-[360px] min-h-0">
         <ScriptPanel />
       </div>
     </div>
