@@ -119,7 +119,7 @@ export default function GenerateLeadsPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddSingle()}
-              placeholder="+420 777 111 222"
+              placeholder="777 111 222"
               className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 transition-all duration-200 focus:border-indigo-500/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 font-mono"
             />
           </div>
@@ -196,8 +196,8 @@ export default function GenerateLeadsPage() {
           }}
           rows={6}
           placeholder={
-            'TechnoSoft s.r.o., +420 777 111 222, IT služby, Praha\n' +
-            'Möbel Design Studio, +420 602 333 444, Nábytkářství, Brno'
+            'TechnoSoft s.r.o., 777 111 222, IT služby, Praha\n' +
+            'Möbel Design Studio, 602 333 444, Nábytkářství, Brno'
           }
           className="w-full resize-none rounded-xl border border-slate-700/50 bg-slate-800/50 p-4 text-sm text-white placeholder-slate-500 transition-all duration-200 focus:border-indigo-500/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 font-mono"
         />

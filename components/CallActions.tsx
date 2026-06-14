@@ -138,12 +138,12 @@ export default function CallActions({
         <div className="mt-4 space-y-3">
           <a
             href={`tel:${lead.phone}`}
-            className="group flex items-center gap-3 text-lg text-slate-300 transition-colors hover:text-indigo-400"
+            className="group flex items-center gap-3 text-lg"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 transition-colors group-hover:bg-indigo-500/20">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 transition-colors group-hover:bg-emerald-500/20">
               <Phone className="h-4 w-4" />
             </span>
-            <span className="font-mono tracking-tight">{lead.phone}</span>
+            <span className="phone-number font-mono tracking-tight">{lead.phone}</span>
           </a>
           <div className="flex items-center gap-3 text-slate-400">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800">

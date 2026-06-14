@@ -66,10 +66,10 @@ export default function LeadTable({
                       {lead.companyName}
                     </button>
                   </td>
-                  <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono text-xs sm:text-sm text-slate-400">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono text-xs sm:text-sm">
                     <a
                       href={`tel:${lead.phone}`}
-                      className="transition-colors hover:text-indigo-400"
+                      className="phone-number"
                     >
                       {lead.phone}
                     </a>

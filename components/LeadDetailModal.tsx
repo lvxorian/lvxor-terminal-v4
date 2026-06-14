@@ -106,12 +106,12 @@ export default function LeadDetailModal({
           <div className="mt-4 space-y-2.5">
             <a
               href={`tel:${lead.phone}`}
-              className="group flex items-center gap-3 text-base text-slate-300 transition-colors hover:text-indigo-400"
+              className="group flex items-center gap-3 text-base"
             >
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
                 <Phone className="h-3.5 w-3.5" />
               </span>
-              <span className="font-mono tracking-tight">{lead.phone}</span>
+              <span className="phone-number font-mono tracking-tight">{lead.phone}</span>
             </a>
             <div className="flex items-center gap-3 text-sm text-slate-400">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800">

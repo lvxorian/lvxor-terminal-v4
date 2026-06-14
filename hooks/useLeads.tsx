@@ -6,12 +6,12 @@ import { Lead, LeadStatus } from '@/app/types';
 const STORAGE_KEY = 'lvxor-leads';
 
 const defaultLeads: Lead[] = [
-  { id: '1', companyName: 'TechnoSoft s.r.o.', phone: '+420 777 111 222', industry: 'IT služby', city: 'Praha', status: LeadStatus.NEW, lastContact: '2026-06-10', notes: '' },
-  { id: '2', companyName: 'Möbel Design Studio', phone: '+420 602 333 444', industry: 'Nábytkářství', city: 'Brno', status: LeadStatus.NO_ANSWER, lastContact: '2026-06-12', notes: 'Zkoušet ve čtvrtek dopoledne.' },
-  { id: '3', companyName: 'GreenLeaf Eko s.r.o.', phone: '+420 725 555 666', industry: 'Ekologie', city: 'Ostrava', status: LeadStatus.CALLBACK, lastContact: '2026-06-13', notes: 'Mají zájem o redizajn webu. Poslat cenovou nabídku.' },
-  { id: '4', companyName: 'LegalConsult v.o.s.', phone: '+420 737 777 888', industry: 'Právní služby', city: 'Plzeň', status: LeadStatus.MEETING, lastContact: '2026-06-11', notes: 'Schůzka domluvena na 20.6. v 10:00 v jejich kanceláři.' },
-  { id: '5', companyName: 'FreshBake s.r.o.', phone: '+420 605 999 000', industry: 'Pekárenství', city: 'Liberec', status: LeadStatus.REJECTED, lastContact: '2026-06-09', notes: 'Nemají zájem, už mají dodavatele.' },
-  { id: '6', companyName: 'AutoMoto Centrum a.s.', phone: '+420 733 123 456', industry: 'Automotive', city: 'Hradec Králové', status: LeadStatus.NEW, lastContact: '2026-06-14', notes: '' },
+  { id: '1', companyName: 'TechnoSoft s.r.o.', phone: '777 111 222', industry: 'IT služby', city: 'Praha', status: LeadStatus.NEW, lastContact: '2026-06-10', notes: '' },
+  { id: '2', companyName: 'Möbel Design Studio', phone: '602 333 444', industry: 'Nábytkářství', city: 'Brno', status: LeadStatus.NO_ANSWER, lastContact: '2026-06-12', notes: 'Zkoušet ve čtvrtek dopoledne.' },
+  { id: '3', companyName: 'GreenLeaf Eko s.r.o.', phone: '725 555 666', industry: 'Ekologie', city: 'Ostrava', status: LeadStatus.CALLBACK, lastContact: '2026-06-13', notes: 'Mají zájem o redizajn webu. Poslat cenovou nabídku.' },
+  { id: '4', companyName: 'LegalConsult v.o.s.', phone: '737 777 888', industry: 'Právní služby', city: 'Plzeň', status: LeadStatus.MEETING, lastContact: '2026-06-11', notes: 'Schůzka domluvena na 20.6. v 10:00 v jejich kanceláři.' },
+  { id: '5', companyName: 'FreshBake s.r.o.', phone: '605 999 000', industry: 'Pekárenství', city: 'Liberec', status: LeadStatus.REJECTED, lastContact: '2026-06-09', notes: 'Nemají zájem, už mají dodavatele.' },
+  { id: '6', companyName: 'AutoMoto Centrum a.s.', phone: '733 123 456', industry: 'Automotive', city: 'Hradec Králové', status: LeadStatus.NEW, lastContact: '2026-06-14', notes: '' },
 ];
 
 function loadLeads(): Lead[] {
