@@ -41,9 +41,9 @@ export default function Dashboard() {
   const filteredLeads =
     filter === 'ALL' ? leads : leads.filter((l) => l.status === filter);
 
-  function handleDelete(id: string) {
+  async function handleDelete(id: string) {
     if (window.confirm('Opravdu chcete smazat tento lead?')) {
-      deleteLead(id);
+      await deleteLead(id);
       setSelectedLead((prev) => (prev?.id === id ? null : prev));
     }
   }

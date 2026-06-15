@@ -29,13 +29,13 @@ export default function GenerateLeadsPage() {
   const [singleMsg, setSingleMsg] = useState<{ type: 'ok' | 'dup' | 'err'; text: string } | null>(null);
   const [bulkResult, setBulkResult] = useState<{ added: number; skipped: number } | null>(null);
 
-  function handleAddSingle() {
+  async function handleAddSingle() {
     if (!name.trim() || !phone.trim()) {
       setSingleMsg({ type: 'err', text: 'Vyplň název firmy a telefon.' });
       return;
     }
 
-    const { added, skipped } = addLeads([{
+    const { added, skipped } = await addLeads([{
       companyName: name.trim(),
       phone: phone.trim(),
       industry: industry.trim() || '—',
@@ -53,7 +53,7 @@ export default function GenerateLeadsPage() {
     }
   }
 
-  function handleAddBulk() {
+  async function handleAddBulk() {
     const lines = bulkRaw
       .split('\n')
       .map((l) => l.trim())
@@ -71,7 +71,7 @@ export default function GenerateLeadsPage() {
 
     if (items.length === 0) return;
 
-    const { added, skipped } = addLeads(items);
+    const { added, skipped } = await addLeads(items);
     setBulkResult({ added: added.length, skipped });
   }
 

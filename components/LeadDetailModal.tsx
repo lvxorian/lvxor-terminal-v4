@@ -72,14 +72,14 @@ export default function LeadDetailModal({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
 
-  function handleStatusChange(newStatus: LeadStatus) {
-    updateNotes(lead.id, notes);
-    updateStatus(lead.id, newStatus);
+  async function handleStatusChange(newStatus: LeadStatus) {
+    await updateNotes(lead.id, notes);
+    await updateStatus(lead.id, newStatus);
     onClose();
   }
 
-  function handleSaveNotes() {
-    updateNotes(lead.id, notes);
+  async function handleSaveNotes() {
+    await updateNotes(lead.id, notes);
   }
 
   return (

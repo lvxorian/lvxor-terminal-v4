@@ -79,8 +79,8 @@ export default function CallActions({
   const [notes, setNotes] = useState(lead.notes);
   const [saved, setSaved] = useState(false);
 
-  function handleSaveNotes() {
-    updateNotes(lead.id, notes);
+  async function handleSaveNotes() {
+    await updateNotes(lead.id, notes);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }

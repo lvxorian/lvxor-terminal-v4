@@ -42,8 +42,8 @@ export default function CallPage() {
   }, [queue, queueIndex, celebrate, router]);
 
   const handleStatusChange = useCallback(
-    (status: LeadStatus) => {
-      updateStatus(id, status);
+    async (status: LeadStatus) => {
+      await updateStatus(id, status);
 
       if (queueIndex === -1) return;
 
