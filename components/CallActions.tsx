@@ -207,7 +207,6 @@ export default function CallActions({
           ))}
         </div>
 
-        {/* Skip */}
         {hasNext && (
           <button
             onClick={onNext}
