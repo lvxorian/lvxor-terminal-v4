@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { Lead, LeadStatus } from '@/app/types';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 
 interface DbRow {
   id: string;
@@ -64,11 +64,15 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from('leads')
+    const sb = getSupabase();
+    if (!sb) {
+      setLoading(false);
+      return;
+    }
+    (sb as any).from('leads')
       .select('*')
       .order('created_at', { ascending: true })
-      .then(({ data, error }) => {
+      .then(({ data, error }: { data: DbRow[] | null; error: any }) => {
         if (!error && data) {
           setLeads((data as DbRow[]).map(toLead));
         } else {
@@ -82,8 +86,8 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
     items: { companyName: string; phone: string; industry: string; city: string }[],
   ): Promise<AddResult> => {
     const existingPhones = new Set(leads.map((l) => l.phone.trim().toLowerCase()));
-    const toInsert: any[] = [];
     let skipped = 0;
+    const toInsert: Record<string, string>[] = [];
 
     for (const item of items) {
       if (existingPhones.has(item.phone.trim().toLowerCase())) {
@@ -104,19 +108,25 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
 
     if (toInsert.length === 0) return { added: [], skipped };
 
-    const { data, error } = await supabase.from('leads').insert(toInsert).select();
-    if (error) {
+    const sb = getSupabase();
+    if (!sb) return { added: [], skipped: items.length };
+
+    const { data, error } = await (sb as any).from('leads').insert(toInsert).select() as { data: DbRow[] | null; error: any };
+    if (error || !data) {
       console.error('Failed to add leads:', error);
       return { added: [], skipped: items.length };
     }
 
-    const added = (data as DbRow[]).map(toLead);
+    const added = data.map(toLead);
     setLeads((prev) => [...prev, ...added]);
     return { added, skipped };
   }, [leads]);
 
   const deleteLead = useCallback(async (id: string): Promise<boolean> => {
-    const { error } = await supabase.from('leads').delete().eq('id', id);
+    const sb = getSupabase();
+    if (!sb) return false;
+
+    const { error } = await (sb as any).from('leads').delete().eq('id', id);
     if (error) {
       console.error('Failed to delete lead:', error);
       return false;
@@ -126,8 +136,11 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateStatus = useCallback(async (id: string, status: LeadStatus) => {
+    const sb = getSupabase();
+    if (!sb) return;
+
     const today = new Date().toISOString().split('T')[0];
-    const { error } = await supabase
+    const { error } = await (sb as any)
       .from('leads')
       .update({ status, last_contact: today })
       .eq('id', id);
@@ -141,7 +154,10 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateNotes = useCallback(async (id: string, notes: string) => {
-    const { error } = await supabase
+    const sb = getSupabase();
+    if (!sb) return;
+
+    const { error } = await (sb as any)
       .from('leads')
       .update({ notes })
       .eq('id', id);
